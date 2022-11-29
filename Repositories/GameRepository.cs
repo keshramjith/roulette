@@ -41,6 +41,12 @@ public class GameRepository : IGameRepository
     {
       for (int i = 0; i < betRepository.BetsCount(); i++)
       {
+        // switch (bets[i].BetType)
+        // {
+        //    case "straight":
+        //      var bet = await context.StraightBets.Where(strBets => strBets.Id == bets[i].BetId)
+        //      var payout = new StraightBet(bet.)
+        // }
         Console.WriteLine("BetType: ", bets[i].BetType);
         Console.WriteLine("BetId: ", bets[i].BetId);
       }
