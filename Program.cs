@@ -1,11 +1,20 @@
-var builder = WebApplication.CreateBuilder(args);
+using AutoMapper;
 
+using roulette.AutoMapperConfig;
+
+var builder = WebApplication.CreateBuilder(args);
+var AutoMapperConfig = new MapperConfiguration(cfg =>
+{
+  cfg.AddProfile<StraightBetProfile>();
+});
+IMapper mapper = AutoMapperConfig.CreateMapper();
 // Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(mapper);
 
 var app = builder.Build();
 
