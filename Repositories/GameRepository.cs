@@ -35,13 +35,15 @@ public class GameRepository : IGameRepository
 
   public async void Payout()
   {
+    var bets = betRepository.GetBets();
     // go through Bets list of tuples
     if (!IsBettingAllowed && betRepository.AnyBets())
     {
-      // for (int i = 0; i < betRepository.BetsCount(); i++)
-      // {
-        
-      // }
+      for (int i = 0; i < betRepository.BetsCount(); i++)
+      {
+        Console.WriteLine("BetType: ", bets[i].BetType);
+        Console.WriteLine("BetId: ", bets[i].BetId);
+      }
     }
   }
 }

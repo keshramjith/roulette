@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Collections.ObjectModel;
 
 using roulette.Dtos;
 using roulette.Entities;
@@ -31,6 +32,11 @@ public class BetRepository : IBetRepository
   public int BetsCount()
   {
     return Bets.Count;
+  }
+
+  public ReadOnlyCollection<(string, long)> GetBets()
+  {
+    return Bets.AsReadOnly();
   }
 
   public async Task<BetResponseDto> PlaceBet(BetRequestDto dto)
