@@ -15,7 +15,22 @@ public class BetRepository : IBetRepository
   {
     this._mapper = mapper;
     this._context = context;
-    Bets = new List<(string, long)>();
+    Bets = new List<(string BetType, long BetId)>();
+  }
+
+  public bool AnyBets()
+  {
+    return Bets.Count > 0;
+  }
+
+  public void ClearBets()
+  {
+    Bets.Clear();
+  }
+
+  public int BetsCount()
+  {
+    return Bets.Count;
   }
 
   public async Task<BetResponseDto> PlaceBet(BetRequestDto dto)

@@ -11,4 +11,5 @@ public class RouletteContext : DbContext
   }
 
   public DbSet<StraightBetEntity> StraightBets { get; set; }
+  public DbSet<SpinEntity> Spins { get; set; }
 }

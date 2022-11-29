@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 using roulette.AutoMapperConfig;
 using roulette.Models;
+using roulette.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 var AutoMapperConfig = new MapperConfiguration(cfg =>
@@ -18,6 +19,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddDbContext<RouletteContext>(options => options.UseSqlite("Database"));
+builder.Services.AddSingleton<IGameRepository>();
+builder.Services.AddSingleton<IBetRepository>();
 
 var app = builder.Build();
 
