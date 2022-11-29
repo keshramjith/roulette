@@ -6,7 +6,7 @@ namespace roulette.Models;
 
 public class RouletteContext : DbContext
 {
-  public RouletteContext(DbContextOptions<DbContext> options) : base(options)
+  public RouletteContext(DbContextOptions<RouletteContext> options) : base(options)
   {
   }
 
