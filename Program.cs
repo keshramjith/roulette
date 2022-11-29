@@ -1,6 +1,8 @@
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 using roulette.AutoMapperConfig;
+using roulette.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var AutoMapperConfig = new MapperConfiguration(cfg =>
@@ -15,6 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(mapper);
+builder.Services.AddDbContext<RouletteContext>(options => options.UseSqlite("Database"));
 
 var app = builder.Build();
 

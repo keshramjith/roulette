@@ -2,21 +2,23 @@ using AutoMapper;
 
 using roulette.Dtos;
 using roulette.Entities;
-
+using roulette.Models;
 namespace roulette.Repositories;
 
 public class BetRepository : IBetRepository
 {
-  private List<(string, string)> Bets;
+  private List<(string, long)> Bets;
   private readonly IMapper _mapper;
+  private readonly RouletteContext _context;
 
-  public BetRepository(IMapper mapper)
+  public BetRepository(IMapper mapper, RouletteContext context)
   {
     this._mapper = mapper;
-    Bets = new List<(string, string)>();
+    this._context = context;
+    Bets = new List<(string, long)>();
   }
 
-  public BetResponseDto PlaceBet(BetRequestDto dto)
+  public async Task<BetResponseDto> PlaceBet(BetRequestDto dto)
   {
     switch (dto.BetType)
     {
@@ -25,9 +27,16 @@ public class BetRepository : IBetRepository
         var entity = new StraightBetEntity();
         var projectedEntity = _mapper.Map<StraightBetEntity>(dto);
         // save to db
+        await _context.AddAsync(projectedEntity);
         // save BetType and BetId in Bets
         // i.e. Bets.Add((dto.BetType, SavedBet.Id))
-        return new BetResponseDto();
+        Bets.Add((dto.BetType, projectedEntity.Id));
+        var respDto = new BetResponseDto();
+        respDto.SpinId = projectedEntity.SpinId;
+        respDto.UserId = dto.UserId;
+        respDto.BetType = dto.BetType;
+        respDto.StraightBet = projectedEntity.PlacedBet;
+        return respDto;
       default:
         return new BetResponseDto();
     }
