@@ -18,9 +18,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(mapper);
-builder.Services.AddDbContext<RouletteContext>(options => options.UseSqlite("Database"));
-builder.Services.AddSingleton<IGameRepository>();
-builder.Services.AddSingleton<IBetRepository>();
+builder.Services.AddDbContext<RouletteContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IBetRepository, BetRepository>();
 
 var app = builder.Build();
 

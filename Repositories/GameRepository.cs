@@ -1,17 +1,33 @@
 namespace roulette.Repositories;
 
+using AutoMapper;
+
 using roulette.Models;
+using roulette.Entities;
+using roulette.Dtos;
 
 public class GameRepository : IGameRepository
 {
-  private bool IsBettingAllowed { get; set; } = false;
+  private bool IsBettingAllowed { get; set; } = true;
   private Spin CurrentSpin { get; set; }
 
-  private readonly IBetRepository betRepository;
+  private readonly IBetRepository _betRepository;
+  private readonly RouletteContext _context;
+  private readonly IMapper _mapper;
 
-  public GameRepository(IBetRepository betRepository)
+  private int houseCash;
+
+  public GameRepository(IBetRepository betRepository, RouletteContext context, IMapper mapper)
   {
-    this.betRepository = betRepository;
+    this._betRepository = betRepository;
+    this._mapper = mapper;
+    this._context = context;
+    this.houseCash = 0;
+  }
+
+  public void AddToHouseCash(int wager)
+  {
+    houseCash = houseCash + wager;
   }
 
   public void StopBetRequests()
@@ -31,25 +47,60 @@ public class GameRepository : IGameRepository
     CurrentSpin.Result = res;
   }
 
+  public int GetCurrentSpinResult() => CurrentSpin.Result;
+
   public bool TakingBets() => IsBettingAllowed;
 
-  public async void Payout()
+  public List<StraightBetEntity> GetBets()
   {
-    var bets = betRepository.GetBets();
-    // go through Bets list of tuples
-    if (!IsBettingAllowed && betRepository.AnyBets())
+    return _context.Set<StraightBetEntity>().ToList();
+  }
+
+  public async Task<BetResponseDto> PlaceBet(BetRequestDto dto)
+  {
+    switch (dto.BetType)
     {
-      for (int i = 0; i < betRepository.BetsCount(); i++)
-      {
-        // switch (bets[i].BetType)
-        // {
-        //    case "straight":
-        //      var bet = await context.StraightBets.Where(strBets => strBets.Id == bets[i].BetId)
-        //      var payout = new StraightBet(bet.)
-        // }
-        Console.WriteLine("BetType: ", bets[i].BetType);
-        Console.WriteLine("BetId: ", bets[i].BetId);
-      }
+      case "straight":
+        var entity = new StraightBetEntity();
+        var projectedEntity = _mapper.Map<StraightBetEntity>(dto);
+        await _context.StraightBets.AddAsync(projectedEntity);
+        await _context.SaveChangesAsync();
+        AddToHouseCash(projectedEntity.Wager);
+        var respDto = new BetResponseDto();
+        respDto.SpinId = projectedEntity.SpinId;
+        respDto.UserId = dto.UserId;
+        respDto.BetType = dto.BetType;
+        respDto.StraightBet = projectedEntity.PlacedBet;
+        return respDto;
+      default:
+        return new BetResponseDto();
     }
+  }
+
+  public async Task<PayoutDto> Payout(string betType, long betId)
+  {
+    if (!IsBettingAllowed)
+    {
+        switch (betType)
+        {
+          case "straight":
+            StraightBetEntity? bet = await _context.StraightBets.FindAsync(betId);
+            if (bet == null)
+            {
+              Console.WriteLine("Something went very wrong");
+              return new PayoutDto();
+            }
+            if (bet.Wager == GetCurrentSpinResult())
+            {
+              var payout = new PayoutDto();
+              payout.Payout = StraightBet.PayoutMultiplier * bet.Wager;
+              return payout;
+            }
+          break;
+        default:
+          return new PayoutDto();
+        }
+    }
+    return new PayoutDto();
   }
 }

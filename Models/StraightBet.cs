@@ -1,13 +1,7 @@
 namespace roulette.Models;
 
-public class StraightBet : Bet
+public static class StraightBet
 {
-  public int PlacedBet { get; set; }
-
-  public StraightBet(int PlacedBet)
-  {
-    this.BetType = "straight";
-    this.PayoutMultiplier = 35;
-    this.PlacedBet = PlacedBet;
-  }
+  public static int PayoutMultiplier { get; } = 35;
+  public static string BetType { get; } = "straight";
 }

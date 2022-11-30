@@ -6,12 +6,11 @@ namespace roulette.Repositories;
 
 public interface IBetRepository
 {
-  Task<BetResponseDto> PlaceBet(BetRequestDto dto);
-  bool AnyBets();
+  // bool AnyBets();
 
-  void ClearBets();
+  // void ClearBets();
 
-  int BetsCount();
+  // int BetsCount();
 
-  ReadOnlyCollection<(string BetType, long BetId)> GetBets();
+  // ReadOnlyCollection<(string BetType, long BetId)> GetBets();
 }

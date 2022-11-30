@@ -2,7 +2,7 @@ namespace roulette.Models;
 
 public abstract class Bet
 {
-  public string BetType { get; set; } = string.Empty;
+  public static string BetType { get; set; } = string.Empty;
 
-  public int PayoutMultiplier { get; set; }
+  public static int PayoutMultiplier { get; set; }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using roulette.Dtos;
 using roulette.Repositories;
+using roulette.Entities;
 
 namespace roulette.Controllers;
 
@@ -9,21 +10,27 @@ namespace roulette.Controllers;
 [Route("[controller]")]
 public class RouletteController : ControllerBase
 {
-  private readonly IBetRepository _betRepository;
+  private readonly IGameRepository _gameRepository;
 
-  public RouletteController(IBetRepository betRepository)
+  public RouletteController(IGameRepository gameRepository)
   {
-    this._betRepository = betRepository;
+    this._gameRepository = gameRepository;
   }
 
   [HttpPost]
-  public async Task<ActionResult<BetResponseDto>> PlaceBet([FromBody] BetRequestDto dto)
+  public async Task<ActionResult<BetResponseDto>> PlaceBet(BetRequestDto dto)
   {
     if (dto.BetType == string.Empty)
     {
       return BadRequest();
     }
-    ActionResult<BetResponseDto> PlacedBet = await PlaceBet(dto);
+    ActionResult<BetResponseDto> PlacedBet = await _gameRepository.PlaceBet(dto);
     return Created("roulette/", PlacedBet);
+  }
+
+  [HttpGet]
+  public List<StraightBetEntity> GetAllBets()
+  {
+   return _gameRepository.GetBets();
   }
 }
